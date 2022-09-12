@@ -11,36 +11,30 @@
 
     <Switch
         android:id="@+id/turnBlth"
-        android:layout_width="140dp"
-        android:layout_height="38dp"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Bluetooth"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/showBtn"
-        android:layout_width="113dp"
-        android:layout_height="35dp"
-        android:layout_gravity="right"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:text="Widoczność"
-        android:textSize="11dp"
+        android:text="Bluetooth"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/pairedDevicesList"
-        android:layout_width="463dp"
-        android:layout_height="112dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline3" />
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2">
 
+        <ListView
+            android:id="@+id/pairedDevicesList"
+            android:layout_width="397dp"
+            android:layout_height="108dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent" />
+    </LinearLayout>
     <TextView
         android:id="@+id/availableDevicesTxt"
         android:layout_width="wrap_content"
@@ -48,6 +42,7 @@
         android:layout_marginStart="12dp"
         android:text="DOSTĘPNE URZĄDZENIA"
         android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />
@@ -65,11 +60,12 @@
 
     <ListView
         android:id="@+id/availableDevices"
-        android:layout_width="468dp"
-        android:layout_height="301dp"
+        android:layout_width="394dp"
+        android:layout_height="291dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline5"
-        tools:layout_editor_absoluteX="6dp" />
+        app:layout_constraintVertical_bias="0.238"
+        tools:layout_editor_absoluteX="9dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -77,13 +73,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.4" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="168dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
@@ -100,12 +89,13 @@
         app:layout_constraintGuide_percent="0.56" />
 
     <TextView
-        android:id="@+id/deviceNameTxt"
+        android:id="@+id/deviceNameTxt2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="NAZWA URZĄDZENIA"
         android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -115,6 +105,7 @@
         android:layout_height="wrap_content"
         android:text="ADRES MAC"
         android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline4" />
@@ -130,18 +121,20 @@
         android:id="@+id/pairedDeviceTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="10dp"
         android:text="URZĄDZENIA SPAROWANE"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/pairedDevicesList"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/deviceNameTxt1"
+        android:layout_width="94dp"
+        android:layout_height="38dp"
         android:layout_marginStart="12dp"
-        android:text="NAZWA :"
+        android:text="NAZWA \nURZĄDZENIA:"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline7" />
@@ -151,37 +144,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="87dp" />
+        app:layout_constraintGuide_begin="77dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="143dp" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName"
-        android:layout_width="209dp"
-        android:layout_height="38dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
-        android:textAlignment="viewStart"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline8"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/guideline7" />
+        app:layout_constraintGuide_begin="128dp" />
 
     <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/editNameBtn"
+        android:layout_width="48dp"
+        android:layout_height="46dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline7"
-        app:srcCompat="@android:drawable/ic_menu_save" />
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <TextView
+        android:id="@+id/actuallyDeviceNameTxt"
+        android:layout_width="164dp"
+        android:layout_height="19dp"
+        android:text="AKTUALNA NAZWA"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintEnd_toStartOf="@+id/editNameBtn"
+        app:layout_constraintStart_toEndOf="@+id/deviceNameTxt1"
+        app:layout_constraintTop_toTopOf="@+id/guideline7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

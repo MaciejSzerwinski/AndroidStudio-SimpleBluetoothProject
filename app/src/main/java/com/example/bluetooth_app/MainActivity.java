@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -17,15 +18,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -40,12 +47,19 @@ public class MainActivity extends AppCompatActivity {
     ListView pairedDevicesList;
     ListView scanDevicesList;
     Switch turnBluetooth;
-    Button showPairedListBtn;       //Show list last paired devices
     Button scanDevicesBtn;      //Button turn on scan mode
+    ImageButton editNameBtn;    //ImageButton to edit device name for Bluetooth
     TextView availableDevicesTxt;
-    TextView deviceNameTxt;
+    TextView deviceNameTxt1;
+    TextView deviceNameTxt2;
+    TextView actualDeviceNameTxt;
     TextView MACAddressTxt;
     TextView pairedDeviceTxt;
+
+    //Dialog components
+    EditText editName_dialog;
+    Button save_Btn;
+    Button cancel_Btn;
 
     //variables
     ArrayList<Device> dataModels;
@@ -55,6 +69,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // WARNING!!!!!!!!!!! IMPORTANT!!!!!!!!!!!!!!!!!
+        //If while click edittext the listView change position
+        //If we wanna fix problem we must put this line
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_MASK_ADJUST);
+        // WARNING!!!!!!!!!!! IMPORTANT!!!!!!!!!!!!!!!!!
 
         ActionBar actionBar = getSupportActionBar();    //Hide action bar
         actionBar.hide();
@@ -75,17 +95,25 @@ public class MainActivity extends AppCompatActivity {
         //describe UI components
         pairedDevicesList = (ListView) findViewById(R.id.pairedDevicesList);
         scanDevicesList = (ListView) findViewById(R.id.availableDevices);
+
         turnBluetooth = (Switch) findViewById(R.id.turnBlth);
-        showPairedListBtn = (Button) findViewById(R.id.showBtn);
         scanDevicesBtn = (Button) findViewById(R.id.refreshBtn);
+        editNameBtn = (ImageButton) findViewById(R.id.editNameBtn);
+
         availableDevicesTxt = (TextView) findViewById(R.id.availableDevicesTxt);
-        deviceNameTxt = (TextView) findViewById(R.id.deviceNameTxt);
+        deviceNameTxt1 = (TextView) findViewById(R.id.deviceNameTxt1);
+        deviceNameTxt2 = (TextView) findViewById(R.id.deviceNameTxt2);
+        actualDeviceNameTxt = (TextView) findViewById(R.id.actuallyDeviceNameTxt);
         MACAddressTxt = (TextView) findViewById(R.id.MACAddressTxt);
         pairedDeviceTxt = (TextView) findViewById(R.id.pairedDeviceTxt);
 
         //declaration default bluetooth adapter
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         dataModels = new ArrayList<>();
+
+        //Getting actually device name and filled it to TextView
+        String deviceName = bluetoothAdapter.getName();
+        actualDeviceNameTxt.setText(deviceName);
 
         checkConnectPermission();
 
@@ -109,6 +137,13 @@ public class MainActivity extends AppCompatActivity {
                 startSearchingDevices();
             }
         });
+
+        editNameBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog();
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -117,10 +152,13 @@ public class MainActivity extends AppCompatActivity {
             turnBluetooth.setChecked(true);
 
             availableDevicesTxt.setVisibility(VISIBLE);
-            deviceNameTxt.setVisibility(VISIBLE);
+            deviceNameTxt1.setVisibility(VISIBLE);
+            deviceNameTxt2.setVisibility(VISIBLE);
+            actualDeviceNameTxt.setVisibility(VISIBLE);
             MACAddressTxt.setVisibility(VISIBLE);
             pairedDeviceTxt.setVisibility(VISIBLE);
 
+            editNameBtn.setVisibility(VISIBLE);
             scanDevicesBtn.setVisibility(VISIBLE);
             scanDevicesBtn.setEnabled(false);
 
@@ -128,11 +166,14 @@ public class MainActivity extends AppCompatActivity {
             showPairedDevices();
         }
         else {
-            deviceNameTxt.setVisibility(GONE);
+            deviceNameTxt1.setVisibility(GONE);
+            deviceNameTxt2.setVisibility(GONE);
+            actualDeviceNameTxt.setVisibility(GONE);
             MACAddressTxt.setVisibility(GONE);
             pairedDeviceTxt.setVisibility(GONE);
             availableDevicesTxt.setVisibility(GONE);
 
+            editNameBtn.setVisibility(GONE);
             scanDevicesBtn.setVisibility(GONE);
             turnBluetooth.setChecked(false);
         }
@@ -175,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "enableDisableBT: Does not have BT capabilities.");
         }
         if (!bluetoothAdapter.isEnabled()) {
-            Log.i("MESS", "JEST GIT");
             Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivity(enableBTIntent);
 
@@ -188,6 +228,44 @@ public class MainActivity extends AppCompatActivity {
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
             registerReceiver(bluetoothStatus, filter);
         }
+    }
+
+    private void showDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.change_device_name_dialog);
+        //WARNING!!!!!!!!! IMPORTANT!!!!!!!!!!!!!!!!!
+        //To setup corner style we must set a background setup
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //WARNING!!!!!!!!! IMPORTANT!!!!!!!!!!!!!!!!!
+        dialog.show();
+
+        //If we wanna set text in dialog we must declare a element use "dialog" (e.g. dialog.findViewById(R.id.editName_dialog);)
+        editName_dialog = (EditText) dialog.findViewById(R.id.editName_dialog);
+        editName_dialog.setText(actualDeviceNameTxt.getText(), TextView.BufferType.EDITABLE);   //Took name device from deviceTextView without download it again
+
+        //Setting the functionality of the Dialog Buttons
+        //Declare dialog component
+        save_Btn = (Button) dialog.findViewById(R.id.save_Btn);
+        cancel_Btn = (Button) dialog.findViewById(R.id.cancel_Btn);
+
+        save_Btn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.S)
+            @Override
+            public void onClick(View v) {
+                checkConnectPermission();
+                actualDeviceNameTxt.setText(editName_dialog.getText());
+                bluetoothAdapter.setName(String.valueOf(editName_dialog.getText()));
+                dialog.dismiss();
+            }
+        });
+
+        cancel_Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
     }
 
     private final BroadcastReceiver bluetoothStatus = new BroadcastReceiver() {
@@ -207,9 +285,12 @@ public class MainActivity extends AppCompatActivity {
                         //Set bluetooth switch in off position
                         turnBluetooth.setChecked(false);
                         scanDevicesBtn.setVisibility(GONE);
+                        editNameBtn.setVisibility(GONE);
 
                         availableDevicesTxt.setVisibility(GONE);
-                        deviceNameTxt.setVisibility(GONE);
+                        deviceNameTxt1.setVisibility(GONE);
+                        deviceNameTxt2.setVisibility(GONE);
+                        actualDeviceNameTxt.setVisibility(GONE);
                         MACAddressTxt.setVisibility(GONE);
                         pairedDeviceTxt.setVisibility(GONE);
 
@@ -229,9 +310,12 @@ public class MainActivity extends AppCompatActivity {
                         //Set bluetooth switch in on position
                         turnBluetooth.setChecked(true);
                         scanDevicesBtn.setVisibility(VISIBLE);
+                        editNameBtn.setVisibility(VISIBLE);
 
                         availableDevicesTxt.setVisibility(VISIBLE);
-                        deviceNameTxt.setVisibility(VISIBLE);
+                        deviceNameTxt1.setVisibility(VISIBLE);
+                        deviceNameTxt2.setVisibility(VISIBLE);
+                        actualDeviceNameTxt.setVisibility(VISIBLE);
                         MACAddressTxt.setVisibility(VISIBLE);
                         pairedDeviceTxt.setVisibility(VISIBLE);
 
@@ -297,6 +381,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                Log.d(TAG, "onReceive: ACTION_DISCOVERY_FINISHED");
                 scanDevicesBtn.setEnabled(true);
             }
         }
